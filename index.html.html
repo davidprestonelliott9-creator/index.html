@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Flashpoint</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --ink-900:#12161A;
+  --ink-800:#1B2126;
+  --ink-700:#242C32;
+  --steel:#4A5560;
+  --paper:#E9E7E1;
+  --paper-dim:#9BA3A9;
+  --ember:#FF5A36;
+  --amber:#F0A93B;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:transparent;color:var(--paper);}
+body{font-family:'Inter',sans-serif;}
+
+#app{
+  background:var(--ink-900);
+  min-height:100vh;
+  padding:0 0 80px 0;
+}
+
+.topbar{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  padding:28px 40px 22px 40px;
+  border-bottom:1px solid var(--ink-700);
+}
+.wordmark{
+  font-family:'Archivo Black',sans-serif;
+  font-size:26px;
+  letter-spacing:0.5px;
+  color:var(--paper);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.wordmark .dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--ember);
+  box-shadow:0 0 12px 2px rgba(255,90,54,0.7);
+}
+.tagline{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  color:var(--paper-dim);
+}
+
+.hero{
+  padding:46px 40px 30px 40px;
+  max-width:820px;
+}
+.hero-eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--ember);
+  margin-bottom:14px;
+}
+.hero h1{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;
+  font-size:44px;
+  line-height:1.05;
+  margin:0 0 14px 0;
+  letter-spacing:0.2px;
+}
+.hero p{
+  font-size:15px;
+  line-height:1.55;
+  color:var(--paper-dim);
+  margin:0;
+  max-width:560px;
+}
+
+.board{
+  padding:10px 40px 0 40px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:18px;
+}
+
+.card{
+  background:var(--ink-800);
+  border:1px solid var(--ink-700);
+  border-radius:6px;
+  padding:22px 22px 20px 22px;
+  cursor:pointer;
+  transition:border-color 0.15s ease, transform 0.15s ease;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.card:hover{
+  border-color:var(--ember);
+  transform:translateY(-2px);
+}
+.card:focus-visible{
+  outline:2px solid var(--ember);
+  outline-offset:2px;
+}
+.card-tag{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  letter-spacing:1.5px;
+  color:var(--amber);
+}
+.card h2{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:600;
+  font-size:24px;
+  line-height:1.12;
+  margin:0;
+  color:var(--paper);
+}
+.card-desc{
+  font-size:12.5px;
+  color:var(--paper-dim);
+  line-height:1.5;
+  margin:0;
+  flex-grow:1;
+}
+
+.line-wrap{display:flex;flex-direction:column;gap:6px;}
+.line-labels{
+  display:flex;
+  justify-content:space-between;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  letter-spacing:0.5px;
+  color:var(--paper-dim);
+}
+.line-labels b{color:var(--paper);font-weight:600;}
+.line{
+  position:relative;
+  height:6px;
+  border-radius:3px;
+  background:var(--steel);
+  overflow:hidden;
+}
+.line-fill{
+  position:absolute;left:0;top:0;bottom:0;
+  background:linear-gradient(90deg,var(--ember),var(--amber));
+  border-radius:3px;
+  transition:width 0.4s ease;
+}
+.line-count{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  color:var(--paper-dim);
+}
+
+/* thread view */
+.thread{
+  padding:40px;
+  max-width:760px;
+  margin:0 auto;
+}
+.back{
+  background:none;
+  border:1px solid var(--ink-700);
+  color:var(--paper-dim);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  letter-spacing:1px;
+  padding:8px 14px;
+  border-radius:4px;
+  cursor:pointer;
+  margin-bottom:28px;
+}
+.back:hover{border-color:var(--ember);color:var(--paper);}
+
+.thread-tag{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  letter-spacing:2px;
+  color:var(--amber);
+  margin-bottom:10px;
+}
+.thread h1{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;
+  font-size:38px;
+  line-height:1.08;
+  margin:0 0 12px 0;
+}
+.thread-desc{
+  color:var(--paper-dim);
+  font-size:14.5px;
+  line-height:1.6;
+  margin:0 0 26px 0;
+}
+
+.big-line{margin-bottom:34px;}
+.big-line .line{height:10px;}
+.big-line .line-labels{font-size:12px;margin-bottom:8px;}
+
+.composer{
+  background:var(--ink-800);
+  border:1px solid var(--ink-700);
+  border-radius:6px;
+  padding:20px;
+  margin-bottom:34px;
+}
+.composer-label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  letter-spacing:1.5px;
+  color:var(--paper-dim);
+  margin-bottom:12px;
+  text-transform:uppercase;
+}
+.side-picker{
+  display:flex;
+  gap:10px;
+  margin-bottom:14px;
+}
+.side-btn{
+  flex:1;
+  padding:10px;
+  border-radius:5px;
+  border:1px solid var(--ink-700);
+  background:var(--ink-900);
+  color:var(--paper-dim);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.15s ease;
+}
+.side-btn.active-a{border-color:var(--ember);color:var(--paper);background:rgba(255,90,54,0.12);}
+.side-btn.active-b{border-color:var(--amber);color:var(--paper);background:rgba(240,169,59,0.12);}
+
+.composer input[type=text], .composer textarea{
+  width:100%;
+  background:var(--ink-900);
+  border:1px solid var(--ink-700);
+  border-radius:5px;
+  color:var(--paper);
+  font-family:'Inter',sans-serif;
+  padding:11px 12px;
+  font-size:13.5px;
+  margin-bottom:10px;
+  resize:vertical;
+}
+.composer textarea{min-height:80px;line-height:1.5;}
+.composer input::placeholder, .composer textarea::placeholder{color:var(--steel);}
+
+.submit-btn{
+  background:var(--ember);
+  color:var(--ink-900);
+  border:none;
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;
+  font-size:15px;
+  letter-spacing:0.5px;
+  padding:10px 20px;
+  border-radius:5px;
+  cursor:pointer;
+}
+.submit-btn:hover{background:var(--amber);}
+.submit-btn:disabled{background:var(--steel);cursor:not-allowed;}
+
+.posts{display:flex;flex-direction:column;gap:14px;}
+.post{
+  border-left:3px solid var(--steel);
+  background:var(--ink-800);
+  border-radius:0 6px 6px 0;
+  padding:14px 16px;
+}
+.post.side-a{border-left-color:var(--ember);}
+.post.side-b{border-left-color:var(--amber);}
+.post-meta{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+}
+.post-side{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  padding:2px 8px;
+  border-radius:3px;
+  color:var(--ink-900);
+  font-weight:600;
+}
+.post-side.a{background:var(--ember);}
+.post-side.b{background:var(--amber);}
+.post-name{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  color:var(--paper-dim);
+}
+.post-time{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  color:var(--steel);
+}
+.post-text{
+  font-size:13.5px;
+  line-height:1.6;
+  color:var(--paper);
+  margin:0;
+  white-space:pre-wrap;
+}
+
+.empty-state{
+  text-align:center;
+  padding:40px 20px;
+  color:var(--paper-dim);
+  font-size:13.5px;
+  border:1px dashed var(--ink-700);
+  border-radius:6px;
+}
+.loading{color:var(--paper-dim);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:20px 40px;}
+
+@media (max-width:600px){
+  .topbar,.hero,.board,.thread{padding-left:20px;padding-right:20px;}
+  .hero h1{font-size:32px;}
+  .thread h1{font-size:28px;}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const TOPICS = [
+  {
+    id:'us-china',
+    tag:'GEOPOLITICS',
+    title:'USA vs. China: Who Wins the Second Cold War?',
+    desc:'Two superpowers, one global order. Make the case for who comes out ahead economically, militarily, and technologically.',
+    sideA:'USA',
+    sideB:'China'
+  },
+  {
+    id:'russia-ukraine',
+    tag:'CONFLICT',
+    title:"Russia vs. Ukraine: Who's Winning the War?",
+    desc:'Territory, attrition, alliances, and endgame. Argue who currently holds the advantage and why.',
+    sideA:'Russia',
+    sideB:'Ukraine'
+  },
+  {
+    id:'nuclear-energy',
+    tag:'ENERGY',
+    title:'Nuclear Energy: Climate Fix or Costly Risk?',
+    desc:'Zero-carbon power at scale, or an expensive, slow-to-build gamble. Where should the money go?',
+    sideA:'Climate Fix',
+    sideB:'Costly Risk'
+  },
+  {
+    id:'free-college',
+    tag:'POLICY',
+    title:'Should College Be Free?',
+    desc:'Public investment in opportunity, or a subsidy that inflates costs and rewards the wrong things.',
+    sideA:'Make It Free',
+    sideB:'Keep It Paid'
+  },
+  {
+    id:'ai-regulation',
+    tag:'TECH',
+    title:'AI Regulation: Guardrail or Growth Killer?',
+    desc:'Government oversight to manage risk, or red tape that hands the future to whoever regulates least.',
+    sideA:'Regulate',
+    sideB:'Deregulate'
+  }
+];
+
+let state = {
+  view:'home',
+  currentTopic:null,
+  counts:{},       // topicId -> {a, b}
+  posts:{},        // topicId -> array
+  loadingCounts:true,
+  loadingPosts:false,
+  pickedSide:null,
+  nameInput:'',
+  textInput:''
+};
+
+function render(){
+  const app = document.getElementById('app');
+  if(state.view === 'home'){
+    app.innerHTML = renderHome();
+    attachHomeHandlers();
+  } else {
+    app.innerHTML = renderThread();
+    attachThreadHandlers();
+  }
+}
+
+function timeAgo(ts){
+  const diff = Math.max(0, Date.now() - ts);
+  const min = Math.floor(diff/60000);
+  if(min < 1) return 'just now';
+  if(min < 60) return min+'m ago';
+  const hr = Math.floor(min/60);
+  if(hr < 24) return hr+'h ago';
+  const day = Math.floor(hr/24);
+  return day+'d ago';
+}
+
+function lineFillPct(a,b){
+  const total = a+b;
+  if(total === 0) return 50;
+  return Math.round((a/total)*100);
+}
+
+function renderHome(){
+  const cards = TOPICS.map(t => {
+    const c = state.counts[t.id] || {a:0,b:0};
+    const pct = lineFillPct(c.a,c.b);
+    const total = c.a + c.b;
+    return `
+      <div class="card" tabindex="0" data-topic="${t.id}">
+        <div class="card-tag">${t.tag}</div>
+        <h2>${t.title}</h2>
+        <p class="card-desc">${t.desc}</p>
+        <div class="line-wrap">
+          <div class="line-labels"><b>${t.sideA}</b><b>${t.sideB}</b></div>
+          <div class="line"><div class="line-fill" style="width:${pct}%"></div></div>
+          <div class="line-count">${total} statement${total===1?'':'s'} filed</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="topbar">
+      <div class="wordmark"><span class="dot"></span>FLASHPOINT</div>
+      <div class="tagline">Pick a side. Make your case.</div>
+    </div>
+    <div class="hero">
+      <div class="hero-eyebrow">Live debate board</div>
+      <h1>Where the arguments actually happen.</h1>
+      <p>Five contested questions. No moderators softening the edges. Click into a debate, take a side, and put your reasoning on the record.</p>
+    </div>
+    ${state.loadingCounts ? '<div class="loading">Loading debate board...</div>' : `<div class="board">${cards}</div>`}
+  `;
+}
+
+function renderThread(){
+  const t = TOPICS.find(x => x.id === state.currentTopic);
+  const c = state.counts[t.id] || {a:0,b:0};
+  const pct = lineFillPct(c.a,c.b);
+  const posts = state.posts[t.id] || [];
+
+  const postsHtml = posts.length === 0
+    ? `<div class="empty-state">No statements yet — be the first to stake a position.</div>`
+    : posts.slice().reverse().map(p => `
+        <div class="post side-${p.side}">
+          <div class="post-meta">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="post-side ${p.side}">${p.side==='a'?t.sideA:t.sideB}</span>
+              <span class="post-name">${escapeHtml(p.name || 'Anonymous')}</span>
+            </div>
+            <span class="post-time">${timeAgo(p.ts)}</span>
+          </div>
+          <p class="post-text">${escapeHtml(p.text)}</p>
+        </div>
+      `).join('');
+
+  const canSubmit = state.pickedSide && state.textInput.trim().length > 0;
+
+  return `
+    <div class="thread">
+      <button class="back" id="backBtn">&larr; ALL DEBATES</button>
+      <div class="thread-tag">${t.tag}</div>
+      <h1>${t.title}</h1>
+      <p class="thread-desc">${t.desc}</p>
+
+      <div class="big-line">
+        <div class="line-labels"><b>${t.sideA} (${c.a})</b><b>${t.sideB} (${c.b})</b></div>
+        <div class="line"><div class="line-fill" style="width:${pct}%"></div></div>
+      </div>
+
+      <div class="composer">
+        <div class="composer-label">File a statement</div>
+        <div class="side-picker">
+          <button class="side-btn ${state.pickedSide==='a'?'active-a':''}" id="pickA" type="button">${t.sideA}</button>
+          <button class="side-btn ${state.pickedSide==='b'?'active-b':''}" id="pickB" type="button">${t.sideB}</button>
+        </div>
+        <input type="text" id="nameField" placeholder="Your name (optional)" value="${escapeAttr(state.nameInput)}" maxlength="40">
+        <textarea id="textField" placeholder="Make your case...">${escapeHtml(state.textInput)}</textarea>
+        <button class="submit-btn" id="submitBtn" ${canSubmit && !state.submitting ? '' : 'disabled'}>${state.submitting ? 'Posting...' : 'Post Statement'}</button>
+      </div>
+
+      ${state.loadingPosts ? '<div class="loading">Loading statements...</div>' : `<div class="posts">${postsHtml}</div>`}
+    </div>
+  `;
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+function escapeAttr(str){
+  return escapeHtml(str).replace(/"/g,'&quot;');
+}
+
+function attachHomeHandlers(){
+  document.querySelectorAll('.card').forEach(card => {
+    const open = () => openTopic(card.getAttribute('data-topic'));
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', e => { if(e.key === 'Enter') open(); });
+  });
+}
+
+function attachThreadHandlers(){
+  document.getElementById('backBtn').addEventListener('click', () => {
+    state.view = 'home';
+    state.currentTopic = null;
+    state.pickedSide = null;
+    state.nameInput = '';
+    state.textInput = '';
+    render();
+  });
+  document.getElementById('pickA').addEventListener('click', () => { state.pickedSide = 'a'; render(); focusText(); });
+  document.getElementById('pickB').addEventListener('click', () => { state.pickedSide = 'b'; render(); focusText(); });
+  document.getElementById('nameField').addEventListener('input', e => { state.nameInput = e.target.value; });
+  document.getElementById('textField').addEventListener('input', e => { state.textInput = e.target.value; });
+  const submitBtn = document.getElementById('submitBtn');
+  if(submitBtn) submitBtn.addEventListener('click', submitPost);
+}
+
+function focusText(){
+  const el = document.getElementById('textField');
+  if(el) el.focus();
+}
+
+async function openTopic(topicId){
+  state.view = 'thread';
+  state.currentTopic = topicId;
+  state.pickedSide = null;
+  state.nameInput = '';
+  state.textInput = '';
+  state.loadingPosts = true;
+  render();
+  await loadPosts(topicId);
+  state.loadingPosts = false;
+  render();
+}
+
+async function loadCounts(){
+  state.loadingCounts = true;
+  render();
+  for(const t of TOPICS){
+    try{
+      const res = await window.storage.get('flashpoint:posts:' + t.id, true);
+      const arr = res ? JSON.parse(res.value) : [];
+      const a = arr.filter(p => p.side === 'a').length;
+      const b = arr.filter(p => p.side === 'b').length;
+      state.counts[t.id] = {a,b};
+    } catch(e){
+      state.counts[t.id] = {a:0,b:0};
+    }
+  }
+  state.loadingCounts = false;
+  render();
+}
+
+async function loadPosts(topicId){
+  try{
+    const res = await window.storage.get('flashpoint:posts:' + topicId, true);
+    state.posts[topicId] = res ? JSON.parse(res.value) : [];
+  } catch(e){
+    state.posts[topicId] = [];
+  }
+}
+
+async function submitPost(){
+  if(!state.pickedSide || state.textInput.trim().length === 0) return;
+  state.submitting = true;
+  render();
+
+  const topicId = state.currentTopic;
+  const newPost = {
+    id: Date.now() + '-' + Math.random().toString(36).slice(2,8),
+    side: state.pickedSide,
+    name: state.nameInput.trim(),
+    text: state.textInput.trim(),
+    ts: Date.now()
+  };
+
+  try{
+    const res = await window.storage.get('flashpoint:posts:' + topicId, true).catch(() => null);
+    const arr = res ? JSON.parse(res.value) : [];
+    arr.push(newPost);
+    await window.storage.set('flashpoint:posts:' + topicId, JSON.stringify(arr), true);
+    state.posts[topicId] = arr;
+    const a = arr.filter(p => p.side === 'a').length;
+    const b = arr.filter(p => p.side === 'b').length;
+    state.counts[topicId] = {a,b};
+  } catch(e){
+    console.error('Failed to save post', e);
+  }
+
+  state.textInput = '';
+  state.submitting = false;
+  render();
+}
+
+render();
+loadCounts();
+</script>
+</body>
+</html>
